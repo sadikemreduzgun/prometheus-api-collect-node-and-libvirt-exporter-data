@@ -1,0 +1,119 @@
+,query_name,query
+0,CPU Busy,"(sum by(instance) (irate(node_cpu_seconds_total{instance=""$node"",job=""$job"", mode!=""idle""}[$__rate_interval])) / on(instance) group_left sum by (instance)((irate(node_cpu_seconds_total{instance=""$node"",job=""$job""}[$__rate_interval])))) * 100"
+1,Sys Load all cores,"avg(node_load5{instance=""$node"",job=""$job""}) /  count(count(node_cpu_seconds_total{instance=""$node"",job=""$job""}) by (cpu)) * 100"
+2,RAM Used,"((node_memory_MemTotal_bytes{instance=""$node"",job=""$job""} - node_memory_MemFree_bytes{instance=""$node"",job=""$job""}) / (node_memory_MemTotal_bytes{instance=""$node"",job=""$job""} )) * 100"
+3,SWAP Used,"((node_memory_SwapTotal_bytes{instance=""$node"",job=""$job""} - node_memory_SwapFree_bytes{instance=""$node"",job=""$job""}) / (node_memory_SwapTotal_bytes{instance=""$node"",job=""$job""} )) * 100"
+4,Root FS Used,"100 - ((node_filesystem_avail_bytes{instance=""$node"",job=""$job"",mountpoint=""/"",fstype!=""rootfs""} * 100) / node_filesystem_size_bytes{instance=""$node"",job=""$job"",mountpoint=""/"",fstype!=""rootfs""})"
+5,RootFS Total Size,"node_filesystem_size_bytes{instance=""$node"",job=""$job"",mountpoint=""/"",fstype!=""rootfs""}"
+6,RAM Total,"node_memory_MemTotal_bytes{instance=""$node"",job=""$job""}"
+7,SWAP Total,"node_memory_SwapTotal_bytes{instance=""$node"",job=""$job""}"
+8,Uptime,"node_time_seconds{instance=""$node"",job=""$job""} - node_boot_time_seconds{instance=""$node"",job=""$job""}"
+9,Busy System,"sum by(instance) (irate(node_cpu_seconds_total{instance=""$node"",job=""$job"", mode=""system""}[$__rate_interval])) / on(instance) group_left sum by (instance)((irate(node_cpu_seconds_total{instance=""$node"",job=""$job""}[$__rate_interval])))"
+10,Busy User,"sum by(instance) (irate(node_cpu_seconds_total{instance=""$node"",job=""$job"", mode=""user""}[$__rate_interval])) / on(instance) group_left sum by (instance)((irate(node_cpu_seconds_total{instance=""$node"",job=""$job""}[$__rate_interval])))"
+11,Busy Lowait,"sum by(instance) (irate(node_cpu_seconds_total{instance=""$node"",job=""$job"", mode=""iowait""}[$__rate_interval])) / on(instance) group_left sum by (instance)((irate(node_cpu_seconds_total{instance=""$node"",job=""$job""}[$__rate_interval])))"
+12,Busy Other,"sum by(instance) (irate(node_cpu_seconds_total{instance=""$node"",job=""$job"", mode=~"".*irq""}[$__rate_interval])) / on(instance) group_left sum by (instance)((irate(node_cpu_seconds_total{instance=""$node"",job=""$job""}[$__rate_interval])))"
+13,Busy Other (previus was Busy IRQs),"sum by(instance) (irate(node_cpu_seconds_total{instance=""$node"",job=""$job"", mode!='idle',mode!='user',mode!='system',mode!='iowait',mode!='irq',mode!='softirq'}[$__rate_interval])) / on(instance) group_left sum by (instance)((irate(node_cpu_seconds_total{instance=""$node"",job=""$job""}[$__rate_interval])))"
+14,idle,"sum by(instance) (irate(node_cpu_seconds_total{instance=""$node"",job=""$job"", mode=""idle""}[$__rate_interval])) / on(instance) group_left sum by (instance)((irate(node_cpu_seconds_total{instance=""$node"",job=""$job""}[$__rate_interval])))"
+15,Ram Used,"node_memory_MemTotal_bytes{instance=""$node"",job=""$job""} - node_memory_MemFree_bytes{instance=""$node"",job=""$job""} - (node_memory_Cached_bytes{instance=""$node"",job=""$job""} + node_memory_Buffers_bytes{instance=""$node"",job=""$job""} + node_memory_SReclaimable_bytes{instance=""$node"",job=""$job""})"
+16,Ram Cache + Buffer,"node_memory_Cached_bytes{instance=""$node"",job=""$job""} + node_memory_Buffers_bytes{instance=""$node"",job=""$job""} + node_memory_SReclaimable_bytes{instance=""$node"",job=""$job""}"
+17,Ram Free,"node_memory_MemFree_bytes{instance=""$node"",job=""$job""}"
+18,Swap Used,"(node_memory_SwapTotal_bytes{instance=""$node"",job=""$job""} - node_memory_SwapFree_bytes{instance=""$node"",job=""$job""})"
+19,"Recved From Ethernet (eth0, enp0s3)","irate(node_network_receive_bytes_total{instance=""$node"",job=""$job""}[$__rate_interval])*8"
+20,recieved from virbr0,"irate(node_network_transmit_bytes_total{instance=""$node"",job=""$job""}[$__rate_interval])*8"
+21,Disk Space Used,"100 - ((node_filesystem_avail_bytes{instance=""$node"",job=""$job"",device!~'rootfs'} * 100) / node_filesystem_size_bytes{instance=""$node"",job=""$job"",device!~'rootfs'})"
+22,Disk Read IOPs,"irate(node_disk_reads_completed_total{instance=""$node"",job=""$job"",device=~""$diskdevices""}[25s])"
+23,Disk Write IOPs,"irate(node_disk_writes_completed_total{instance=""$node"",job=""$job"",device=~""$diskdevices""}[25s])"
+24,I/O Utilization percentage,"irate(node_disk_io_time_seconds_total{instance=""$node"",job=""$job"",device=~""$diskdevices""} [25s])"
+25,Processors Blocked for Block System,"node_procs_blocked{instance=""$node"",job=""$job""}"
+26,Processes on Runnable State,"node_procs_running{instance=""$node"",job=""$job""}"
+27,Processes  Forks,"irate(node_forks_total{instance=""$node"",job=""$job""}[$__rate_interval])"
+28,Process schedule stats Running ,"irate(node_schedstat_running_seconds_total{instance=""$node"",job=""$job""}[$__rate_interval])"
+29,Process schedule stats Waiting,"irate(node_schedstat_waiting_seconds_total{instance=""$node"",job=""$job""}[$__rate_interval])"
+30,System Load 1m,"node_load1{instance=""$node"",job=""$job""}"
+31,System Load 5m,"node_load5{instance=""$node"",job=""$job""}"
+32,System Load 15m,"node_load15{instance=""$node"",job=""$job""}"
+33,Context Switches,"irate(node_context_switches_total{instance=""$node"",job=""$job""}[5s])"
+34,Interrupts,"irate(node_intr_total{instance=""$node"",job=""$job""}[5s])"
+35,Power Supply,"node_power_supply_online{instance=""$node"",job=""$job""}"
+36,Throttle cooling device,"node_cooling_device_cur_state{instance=""$node"",job=""$job""}"
+37,Disk IOps Reads Completed,"irate(node_disk_reads_completed_total{instance=""$node"",job=""$job""}[5s])"
+38,Disk IOps Writes Completed,"irate(node_disk_writes_completed_total{instance=""$node"",job=""$job""}[5s])"
+39,Disk Average Wait Time Reading,"irate(node_disk_read_time_seconds_total{instance=""$node"",job=""$job""}[$__rate_interval]) / irate(node_disk_reads_completed_total{instance=""$node"",job=""$job""}[$__rate_interval])"
+40,Disk Average Wait Time Writing,"irate(node_disk_write_time_seconds_total{instance=""$node"",job=""$job""}[$__rate_interval]) / irate(node_disk_writes_completed_total{instance=""$node"",job=""$job""}[$__rate_interval])"
+41,Average Queue Size,"irate(node_disk_io_time_weighted_seconds_total{instance=""$node"",job=""$job""}[$__rate_interval])"
+42,Disk Read Merged,"irate(node_disk_reads_merged_total{instance=""$node"",job=""$job""}[$__rate_interval])"
+43,Disk Write Merged,"irate(node_disk_writes_merged_total{instance=""$node"",job=""$job""}[$__rate_interval])"
+44,Time Spent Doing I/O,"irate(node_disk_io_time_seconds_total{instance=""$node"",job=""$job""}[$__rate_interval])"
+45,File Nodes Free,"node_filesystem_files_free{instance=""$node"",job=""$job"",device!~'rootfs'}"
+46,Space Available,"node_filesystem_avail_bytes{instance=""$node"",job=""$job"",device!~'rootfs'}"
+47,Received Network Traffic,"irate(node_network_receive_packets_total{instance=""$node"",job=""$job""}[$__rate_interval])"
+48,Transmitted Network Traffic,"irate(node_network_transmit_packets_total{instance=""$node"",job=""$job""}[5s])"
+49,Network Total Received Errors,"irate(node_network_receive_errs_total{instance=""$node"",job=""$job""}[5s])"
+50,Network Transmitted Errors Total,"irate(node_network_transmit_errs_total{instance=""$node"",job=""$job""}[$__rate_interval])"
+51,Network Traffix Multicast,"irate(node_network_receive_multicast_total{instance=""$node"",job=""$job""}[$__rate_interval])"
+52,ARP entries,"node_arp_entries{instance=""$node"",job=""$job""}"
+53,Network Speed,"node_network_speed_bytes{instance=""$node"",job=""$job""}"
+54,Network Queue Length,"node_network_transmit_queue_length{instance=""$node"",job=""$job""}"
+55,Softnet Packets Processed,"irate(node_softnet_processed_total{instance=""$node"",job=""$job""}[$__rate_interval])"
+56,Softnet Packets Dropped ,"irate(node_softnet_dropped_total{instance=""$node"",job=""$job""}[$__rate_interval])"
+57,Softnet Out Of quota,"irate(node_softnet_times_squeezed_total{instance=""$node"",job=""$job""}[$__rate_interval])"
+58,Node Network UP,"node_network_up{operstate=""up"",instance=""$node"",job=""$job""}"
+59,TCP Allocated sockets,"node_sockstat_TCP_alloc{instance=""$node"",job=""$job""}"
+60,TCP Sockets Currently Issue,"node_sockstat_TCP_inuse{instance=""$node"",job=""$job""}"
+61,TCP Orphan Sockets,"node_sockstat_TCP_orphan{instance=""$node"",job=""$job""}"
+62,TCP Sockets Waiting to Close,"node_sockstat_TCP_tw{instance=""$node"",job=""$job""}"
+63,UDP lite sockets Currently in use,"node_sockstat_UDPLITE_inuse{instance=""$node"",job=""$job""}"
+64,UDP sockets currently in use,"node_sockstat_UDP_inuse{instance=""$node"",job=""$job""}"
+65,Used Mermory For UDP,"node_sockstat_UDP_mem{instance=""$node"",job=""$job""}"
+66,TCP Sockets memory,"node_sockstat_TCP_mem_bytes{instance=""$node"",job=""$job""}"
+67,UDP sockets memory,"node_sockstat_UDP_mem_bytes{instance=""$node"",job=""$job""}"
+68,Used memory for frag,"node_sockstat_FRAG_memory{instance=""$node"",job=""$job""}"
+69,Sockstat Used,"node_sockstat_sockets_used{instance=""$node"",job=""$job""}"
+70,Netstat Received Octets,"irate(node_netstat_IpExt_InOctets{instance=""$node"",job=""$job""}[$__rate_interval])"
+71,Netstat Sent Octets,"irate(node_netstat_IpExt_OutOctets{instance=""$node"",job=""$job""}[$__rate_interval])"
+72,Netstat UDP datagrams Received,"irate(node_netstat_Udp_InDatagrams{instance=""$node"",job=""$job""}[$__rate_interval])"
+73,NetStat UDP datagrams Sent,"irate(node_netstat_Udp_OutDatagrams{instance=""$node"",job=""$job""}[$__rate_interval])"
+74,TCP segments recieved,"irate(node_netstat_Tcp_InSegs{instance=""$node"",job=""$job""}[$__rate_interval])"
+75,TCP segments sent,"irate(node_netstat_Tcp_OutSegs{instance=""$node"",job=""$job""}[$__rate_interval])"
+76,TCP netstat resets,"irate(node_netstat_Tcp_OutRsts{instance=""$node"",job=""$job""}[$__rate_interval])"
+77,TCP  segments restransmited,"irate(node_netstat_Tcp_RetransSegs{instance=""$node"",job=""$job""}[$__rate_interval])"
+78,TCP Connections,"node_netstat_Tcp_CurrEstab{instance=""$node"",job=""$job""}"
+79,TCP direct Transition Active,"irate(node_netstat_Tcp_ActiveOpens{instance=""$node"",job=""$job""}[$__rate_interval])"
+80,TCP direct Transition Passive,"irate(node_netstat_Tcp_PassiveOpens{instance=""$node"",job=""$job""}[$__rate_interval])"
+81,Node Exporter Bunch of data,"node_scrape_collector_duration_seconds{instance=""$node"",job=""$job""}"
+82,Node exporter scarpe success,"node_scrape_collector_success{instance=""$node"",job=""$job""}"
+83,node exporter scarpe error,"node_textfile_scrape_error{instance=""$node"",job=""$job""}"
+84,Memory Used Percent,libvirt_domain_memory_stats_used_percent
+85,Total Memory inside VM,libvirt_domain_info_maximum_memory_bytes{}
+86,Available Memory İnside Working VM,libvirt_domain_memory_stats_usable_bytes{}
+87,Cache Memory,libvirt_domain_memory_stats_disk_cache_bytes{}
+88,Current Balloon Value,libvirt_domain_memory_stats_actual_balloon_bytes{}
+89,RSS value,libvirt_domain_memory_stats_rss_bytes{}
+90,Total CPU,libvirt_domain_info_virtual_cpus{}
+91,vCPU usage,"avg by (domain) (irate(libvirt_domain_info_cpu_time_seconds_total{host=~""$compute"", job=~""libvirt_exporter""}[30s])) * 100"
+92,vCPU used Percentage,(avg by (domain) (irate(libvirt_domain_info_cpu_time_seconds_total{}[30s])) * 100)-0
+93,vCPU counts,libvirt_domain_info_virtual_cpus{}
+94,Network Traffic,irate(libvirt_domain_interface_stats_transmit_bytes_total{}[5m])
+95,Rate of Packages received on a network interface,rate(libvirt_domain_interface_stats_receive_packets_total{}[5m])
+96,Network dropped packages number,rate(libvirt_domain_interface_stats_transmit_drops_total{}[5m])
+97,Network packages number of errors received,rate(libvirt_domain_interface_stats_receive_errors_total{}[5m])
+98,Write Requests to a block device,irate(libvirt_domain_block_stats_write_requests_total{}[5m])
+99,Read Requests to a block device,irate(libvirt_domain_block_stats_read_requests_total{}[5m])
+100,Bytes written to a block device,irate(libvirt_domain_block_stats_write_bytes_total{}[5m])
+101,Bytes that are read from a block device,irate(libvirt_domain_block_stats_read_bytes_total{}[5m])
+102,Image Allocation,libvirt_domain_block_stats_allocation{}
+103,IOPS Read,rate(libvirt_domain_block_stats_read_requests_total{}[30s])
+104,IOPS Write,rate(libvirt_domain_block_stats_write_requests_total{}[30s])
+105,Throughput Read,rate(libvirt_domain_block_stats_read_bytes_total{}[30s])
+106,Throughput Write,rate(libvirt_domain_block_stats_write_bytes_total{}[30s])
+107,Network Recieved data (RX),rate(libvirt_domain_interface_stats_receive_bytes_total{}[30s])
+108,Network Sent data (TX),rate(libvirt_domain_interface_stats_transmit_bytes_total{}[30s])
+109,Network Received packets,rate(libvirt_domain_interface_stats_receive_packets_total{}[30s])
+110,Network Sent packets,rate(libvirt_domain_interface_stats_transmit_packets_total{}[30s])
+111,Error received on received packets,rate(libvirt_domain_interface_stats_receive_errors_total{}[30s])
+112,Error received on packets sent,rate(libvirt_domain_interface_stats_transmit_errors_total{}[30s])
+113,Drops of received packets,rate(libvirt_domain_interface_stats_receive_drops_total{}[30s])
+114,Drops of packets sent,rate(libvirt_domain_interface_stats_transmit_drops_total{}[30s])
+115,Total Machine Number,sum(libvirt_domain_info_meta{})
+116,Running VM number,count(libvirt_domain_info_vstate{} ==1)
+117,Number of VMs closed,count(libvirt_domain_info_vstate{} ==5)
