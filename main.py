@@ -63,7 +63,7 @@ def do_main(start, end, step, step_func="5s"):
         query = col["query"]
 
         # get instance to run curly organizer function
-        instance = "node", "{instance=" + f'{return_instance("node")}' + "}"
+        instance = "{instance=" + f'{return_instance("node")}' + "}"
         # run curly organizer delete instance and replace it
         url = curly_organizer(query, instance, step_func)
         # get data after organizing the url
@@ -134,7 +134,7 @@ def do_main(start, end, step, step_func="5s"):
         # processes of devices taken by a function
         for device in devices:
             # assign instance to run curly organizer function
-            instance = "libvirt", "{instance=" + f'{return_instance("libvirt")}'+ ",domain=" + f'"{device}"'+"}"
+            instance = "{instance=" + f'{return_instance("libvirt")}'+ ",domain=" + f'"{device}"'+"}"
             # run curly organizer delete instance and replace it
             url = curly_organizer(query, instance, step_func)
             # get data after organizing the url
