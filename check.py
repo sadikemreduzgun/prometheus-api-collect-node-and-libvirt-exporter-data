@@ -9,14 +9,14 @@ def check_installed():
     query_node = "node_load1"
     query_libvirt = "libvirt_domain_block_stats_allocation"
 
-    url_node = f"http://localhost:9090/api/v1/query_range?query={query_node}"
-    query_libvirt = f"http://localhost:9090/api/v1/query_range?query={query_libvirt}"
+    url_node = f"http://localhost:9090/api/v1/query?query={query_node}"
+    query_libvirt = f"http://localhost:9090/api/v1/query?query={query_libvirt}"
 
     try:
         data_node = rq.get(url_node).json()
         data_libvirt = rq.get(query_libvirt).json()
 
-        if data_node['status'] == 'succes':
+        if data_node['status'] == 'success':
             node_query_exist = True
 
         if data_libvirt['status'] == 'success':
