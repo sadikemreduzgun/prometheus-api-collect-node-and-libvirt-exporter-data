@@ -7,6 +7,8 @@ from reach_time import *
 from check import check_installed
 
 
+# desired recent time selection
+# please adjust the date to a date after libvirt and node exporters installed and naturally stored some data
 day = 0
 hour = 12
 minute = 0
@@ -20,8 +22,11 @@ step = "2s"
 # end = "2023-02-21T19:59:25.479Z"
 # start = "2023-02-27T06:22:25.479Z"
 # end= "2023-02-28T07:39:25.479Z"
+
+# check if exporters installed
 node_exist, libvirt_exist = check_installed()
 
+# if not installed exit
 if not node_exist:
     print("please install node exporter to monitored machine. ")
     exit()
@@ -31,10 +36,12 @@ if not libvirt_exist:
     exit()
 
 
+# main function which gets and organizes data
 def do_main(start, end, step, step_func="5s"):
-
+    
     queries = []
-    df = pd.read_csv('all_queries.csv')
+    # load csv data into dataframes
+    #df = pd.read_csv('all_queries.csv')
     df_nodes = pd.read_csv("node_queries.csv")
     df_libvs = pd.read_csv("libvirt_queries.csv")
     # define a boolean to be used to run a statement for once
@@ -48,6 +55,8 @@ def do_main(start, end, step, step_func="5s"):
     # define lists for to store column names
     titles = ["time_stamp"]
     titles_node = ["time_stamp"]
+    
+    # prepare a list if buffer can't come up short
     titles_node_less = []
     title_count_lib = 0
     # read queries, organize them and gather their values
@@ -56,9 +65,11 @@ def do_main(start, end, step, step_func="5s"):
     # booleans to execute a statement for each loop turn
     three_crap_boolean = True
     four_crap_boolean = True
-
+    
+    # iterate node queries
     for name, col in df_nodes.iterrows():
-
+        
+        # get query names and queries themself
         query_name = col["query_name"]
         query = col["query"]
 
@@ -124,9 +135,11 @@ def do_main(start, end, step, step_func="5s"):
                 # conneect metrics
                 else:
                     temp_data3 = np.concatenate((temp_data3, metric.T), axis=1)
-
+    
+    # iterate libvirt queries
     for name, col in df_libvs.iterrows():
-
+        
+        # get query names and queries themself
         query_name = col["query_name"]
         query = col["query"]
         # a counter of device loop
@@ -211,7 +224,8 @@ def do_main(start, end, step, step_func="5s"):
                             save = np.concatenate((save, saves), axis=1)
                             # append queries into titles
                             titles.append(query_name)
-
+            
+            # catch if anything goes with time
             except:
                 print("Potential time error. Please check if start and end time relevant. ")
                 non_saved_log.append("an error occured: \t" + str(datetime.now()) + "\t ERROR IN MAIN LOOP!")
@@ -220,54 +234,61 @@ def do_main(start, end, step, step_func="5s"):
             # increment at the end of devices loop
             in_count += 1
 
-    save = 123
-    devices = 123
+    save = 200
+    devices = 200
 
-    temp_data3 = 123
+    temp_data3 = 200
+    
     return temp_data3, temp_data2, save, devices, non_saved_log, titles_node
 # titles_node.append(query)
 
+# get time_limit
+# prometheus can't go over 11000 data using request for longer time periods time period must be divided
+time = int(step[0])
+a,v,b,vw,time_limit = time_div_step(day, hour, minute, time)
 
-
-a,v,b,vw,time_limit = time_div_step(day, hour, minute, 2)
-
-start, end = give_default_dates(day_back=day, hour_back=hour, min_back=minute)
 crap_bool = True
-print("yeha")
-print(time_limit)
-hold1 = 0
-hold2 = hour+24*day
-hold3 = minute
+# make day 0 to prevent clutter
+hold_day = 0
+hold_hour = hour+24*day
+hold_minute = minute
 # day w day-hold1
 
 # 0,1,2,3...,divider-1, runs divider times
 # oldu gibi
 
+# iterate over divided time period and give use them to run main loop: "do_main" and merge collected-less-than-11000-points data together 
 for count_time in range(time_limit):
-
-    f, s, t, fo, ww = time_div_step(hold1, hold2, hold3, 2)
-    start, end = give_default_dates(day_back=hold1, hour_back=hold2, min_back=hold3, end_recent_day=hold1,
-                                    end_recent_hour=hold2 - s, end_recent_min=hold3 - t)
+    
+    # get divided time periods and go back as them, give date as it
+    day, hour, minute, sec, time_div = time_div_step(hold_day, hold_hour, hold_minute, time)
+    # get start, end dates of time interval divisions
+    start, end = give_default_dates(day_back=hold_day, hour_back=hold_hour, min_back=hold_minute, end_recent_day=hold_day,
+                                    end_recent_hour=hold_hour - hour, end_recent_min=hold_minute - minute)
+    # get worked data of function
     temp_data3, temp_data2, save, devices, non_saved_log, titles_node = do_main(start, end, step)
+    # load worked data into dataframe
     temp_data2 = pd.DataFrame(temp_data2,columns=titles_node)
-    print("here is : ", temp_data2)
-
+    
+    # get first data by running just once for only the first time
     if crap_bool:
-        hold = temp_data2
+        hold_data = temp_data2
         crap_bool = False
-
+    
+    # merge stored
     else:
-        hold = pd.concat((hold, temp_data2), axis=0)
-
-    hold1 = f
-    hold2 = hold2 - s
-    hold3 = hold3 - t
-    hold4 = fo
+        hold_data = pd.concat((hold_data, temp_data2), axis=0)
+    
+    # go back as time parts
+    hold_day = day
+    hold_hour = hold_hour - hour
+    hold_minute = hold_minute - minute
+    hold4 = hold4 - sec
 
 # save node exporter data
 try:
 
-    print(hold.shape)
+    print(hold_data.shape)
     print(len(titles_node))
     # print(temp_data3.shape)
     # load data into a dataframe
@@ -277,7 +298,7 @@ try:
     except:
         print("excepted")
 
-    df = pd.DataFrame(hold)
+    df = pd.DataFrame(hold_data)
     # df = pd.DataFrame(temp_data2,columns=titles_node)
     # save data in csv format
     try:
