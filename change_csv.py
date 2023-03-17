@@ -2,20 +2,24 @@ import pandas as pd
 import requests as rq
 
 
+# can be used to reload back when wanted to turn back to old state
 def split_csv():
+    # load the dataframe  into "df"
     df = pd.read_csv("all_queries.csv")
+    # define empty directories and lists to create a dataframe
     nodes = {}
     libvirts = {}
     node_data =[]
     node_name = []
     libv_data = []
     libv_name=[]
+    
+    # get names and colummn names of queries of main query csv
     for name, col in df.iterrows():
-
+        # assign values
         query_name = col["query_name"]
         query = col["query"]
 
-        print(query)
         # a boolean for searching the word
         found = False
         # define an empty string to be used
@@ -45,24 +49,25 @@ def split_csv():
 
             # if "node" is found, return instance as stated
             if check_word == "node":
-
+                # store desired data
                 node_data.append(query)
                 node_name.append(query_name)
 
             # if "libvirt" is found, return instance as stated
             if check_word == "libvirt":
-
+                # store desired data
                 libv_data.append(query)
                 libv_name.append(query_name)
             # if can't be found return error
 
-
+    # load into node dictionary    
     nodes["query_name"] = node_name
     nodes["query"] = node_data
-
+    # load into libvirt dictionary
     libvirts["query_name"] = libv_name
     libvirts["query"] = libv_data
-
+    
+    # load dictionaries into dataframes and save them in the same directory.
     pd.DataFrame(nodes).to_csv("node_queries.csv",index=False)
     pd.DataFrame(libvirts).to_csv("libvirt_queries.csv",index=False)
 #df_node = pd.DataFrame(nodes)
@@ -73,15 +78,21 @@ def split_csv():
 
 
 def delete_row(df, num):
-
+    # remove the entered number of element of the given dataframe
     df = pd.concat((df.iloc[0:num,:],df.iloc[num+1:len(df),:]),axis=0, ignore_index=True)
     return df
 
 
-def add_row(df):
+# df = delete_row(df)
 
+
+def add_row(df):
+    # get query and query name
     query_name = input("Query name: ")
     query = input("Query: ")
-    print(df)
+    # add those in the df
     df = df.append({"query_name":query_name, "query":query}, ignore_index=True)
-    print(df)
+    
+    return df
+
+# usage : df = add_row(df)
