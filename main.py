@@ -298,7 +298,7 @@ try:
 
 except:
     # print error in log.txt file
-    with open('../var/log.txt', 'w') as f:
+    with open('log.txt', 'w') as f:
         f.write("An error occured while loading node data into df or saving to file! " + str(date.today()))
         f.write('\n')
         f.close()
@@ -329,7 +329,7 @@ try:
     df = df[cols]
 
     # save data into a csv file
-    df.to_csv('../out/libvirt_data.csv')
+    df.to_csv('out/libvirt_data.csv')
     print("Libvirt exporter, VM data saved in out folder.")
 
     # save dataframe into new created cs
@@ -337,7 +337,7 @@ try:
 
 # print in log file if any problem occurs
 except:
-    with open('../var/log.txt', 'a') as f:
+    with open('log.txt', 'a') as f:
         f.write("Error while loading the data into or saving the libvirt's csv file! " + str(date.today()))
         f.write('\n')
         f.close()
