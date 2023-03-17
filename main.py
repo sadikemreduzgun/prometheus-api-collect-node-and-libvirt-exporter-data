@@ -235,8 +235,8 @@ start, end = give_default_dates(day_back=day, hour_back=hour, min_back=minute)
 crap_bool = True
 print("yeha")
 print(time_limit)
-hold1 = day
-hold2 = hour
+hold1 = 0
+hold2 = hour+24*day
 hold3 = minute
 # day w day-hold1
 
@@ -245,9 +245,10 @@ hold3 = minute
 
 for count_time in range(time_limit):
 
-    f,s,t,fo,ww = time_div_step(hold1, hold2, hold3, 2)
-    start, end = give_default_dates(day_back=hold1, hour_back=hold2, min_back=hold3, end_recent_day=hold1, end_recent_hour=hold2-s,end_recent_min=hold3-t)
-    temp_data3, temp_data2, save, devices, non_saved_log, titles_node = do_main(start, end, 2)
+    f, s, t, fo, ww = time_div_step(hold1, hold2, hold3, 2)
+    start, end = give_default_dates(day_back=hold1, hour_back=hold2, min_back=hold3, end_recent_day=hold1,
+                                    end_recent_hour=hold2 - s, end_recent_min=hold3 - t)
+    temp_data3, temp_data2, save, devices, non_saved_log, titles_node = do_main(start, end, step)
     temp_data2 = pd.DataFrame(temp_data2,columns=titles_node)
     print("here is : ", temp_data2)
 
