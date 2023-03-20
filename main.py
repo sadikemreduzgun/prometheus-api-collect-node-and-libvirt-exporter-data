@@ -5,6 +5,7 @@ import numpy as np
 from datetime import date
 from reach_time import *
 from check import check_installed
+from datetime import datetime
 
 
 # desired recent time selection
@@ -48,6 +49,7 @@ def do_main(start, end, step, step_func="5s"):
     one_crap_boolean = True
     # get Virtual machine names
     devices = reach_device(start, end)
+    print(devices)
     # a weird boolean too, to execute a statement once
     two_crap_boolean = True
     # define a list to store query names which returns no data and save them in var/log.txt
@@ -84,7 +86,6 @@ def do_main(start, end, step, step_func="5s"):
         # get data using requests modul
         metrics = rq.get(url)
         # load data into json
-        print(url)
         data = metrics.json()
 
         try:
@@ -154,6 +155,7 @@ def do_main(start, end, step, step_func="5s"):
             url = organize_url(url, start, end, step)
             # get data using requests modul
             metrics = rq.get(url)
+            print(url)
             # turn data into dictionary
             metrics = metrics.json()
             # hold metrics data
@@ -163,6 +165,7 @@ def do_main(start, end, step, step_func="5s"):
             try:
                 if len(temp_metrics['data']['result']) == 0:
                     now = str(datetime.now())
+                    print(0)
                     # save queries which returns no data
                     if query_name not in queries:
                         queries.append(query_name)
@@ -215,6 +218,7 @@ def do_main(start, end, step, step_func="5s"):
                         # run once and store first element
                         if four_crap_boolean:
                             saves = metric.T
+                            print(saves.shape)
                             four_crap_boolean = False
                         # perform operation mentioned above
                         else:
@@ -234,12 +238,15 @@ def do_main(start, end, step, step_func="5s"):
             # increment at the end of devices loop
             in_count += 1
 
-    save = 200
     devices = 200
+    try:
+        return temp_data3, temp_data2, save, devices, non_saved_log, titles_node, titles_node_less
 
-    temp_data3 = 200
-    
-    return temp_data3, temp_data2, save, devices, non_saved_log, titles_node
+    except:
+
+        temp_data3 = 123
+
+    return temp_data3, temp_data2, save, devices, non_saved_log, titles_node, titles_node_less
 # titles_node.append(query)
 
 # get time_limit
@@ -266,24 +273,42 @@ for count_time in range(time_limit):
     start, end = give_default_dates(day_back=hold_day, hour_back=hold_hour, min_back=hold_minute, end_recent_day=hold_day,
                                     end_recent_hour=hold_hour - hour, end_recent_min=hold_minute - minute)
     # get worked data of function
-    temp_data3, temp_data2, save, devices, non_saved_log, titles_node = do_main(start, end, step)
+    temp_data3, temp_data2, save, devices, non_saved_log, titles_node, titles_node_less = do_main(start, end, step)
     # load worked data into dataframe
     temp_data2 = pd.DataFrame(temp_data2,columns=titles_node)
-    
+    temp_data2["time_stamp"]=temp_data2.apply(lambda x : datetime.fromtimestamp(int(x["time_stamp"])),axis=1)
+    print(temp_data2)
+    save = pd.DataFrame(save) 
     # get first data by running just once for only the first time
     if crap_bool:
         hold_data = temp_data2
         crap_bool = False
+        hold_save = save
     
     # merge stored
     else:
-        hold_data = pd.concat((hold_data, temp_data2), axis=0)
+
+        hold_save = pd.concat((hold_save, save), axis=0, ignore_index=True)
+
+        try:
+
+            hold_data = pd.concat((hold_data, temp_data2), axis=0, ignore_index=True)
     
+        except:
+            
+            temp_data3 = pd.DataFrame(temp_data3)
+            temp_data2 = pd.concat((temp_data2, temp_data3), axis=1, ignore_index=True)
+            print(temp_data2)
+            print(hold_data)
+            try:
+                hold_data = pd.concat((hold_data, temp_data2), axis=0, ignore_index=True)
+            except:
+                pass
+
     # go back as time parts
     hold_day = day
     hold_hour = hold_hour - hour
     hold_minute = hold_minute - minute
-    hold4 = hold4 - sec
 
 # save node exporter data
 try:
@@ -331,10 +356,10 @@ except:
 
 try:
     # load save data into a dataframe
-    df = pd.DataFrame(save)
+    df = pd.DataFrame(hold_save)
     # df = pd.DataFrame(save, columns=titles)
     # turn df into a list to change order of columns
-    my_list = df.columns.tolist()
+    """my_list = df.columns.tolist()
     # load names of devices into a list
     names_devices = []
     for c in range(len(devices)):
@@ -347,7 +372,7 @@ try:
     # change the order of colums of dataframe
     cols = df.columns.tolist()
     cols = cols[:1] + cols[-1:] + cols[1:-1]
-    df = df[cols]
+    df = df[cols]"""
 
     # save data into a csv file
     df.to_csv('out/libvirt_data.csv')
