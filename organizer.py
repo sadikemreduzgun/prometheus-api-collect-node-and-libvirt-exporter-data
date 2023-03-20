@@ -61,6 +61,8 @@ def organize_url(query, start, end, step="5s"):
         # if there is "*" character, change it to %2A
         elif letter == "*":
             url_str += "%2A"
+        elif letter == "/":
+            url_str += "%2F"
 
         #        elif letter=="-":
         #            url_str+="%2D"
@@ -78,7 +80,7 @@ def reach_device(start=give_default_dates()[0], end=give_default_dates()[1]):
     # define an empty list
     domains = []
     # define a query
-    query = "libvirt_domain_block_stats_allocation"
+    query = "libvirt_domain_info_vstate"
     # load the query and the taken time data into an URL
     url = f"http://localhost:9090/api/v1/query_range?query={query}&start={start}&end={end}&step=3m"
 
@@ -148,7 +150,7 @@ def return_instance(which="", start=give_default_dates()[0], end=give_default_da
 
     elif which == "libvirt":
         # assign query
-        query = "libvirt_domain_block_stats_allocation"
+        query = "libvirt_domain_info_vstate"
         # load query and time data into URL
         url = f"http://localhost:9090/api/v1/query_range?query={query}&start={start}&end={end}&step=30s"
 
